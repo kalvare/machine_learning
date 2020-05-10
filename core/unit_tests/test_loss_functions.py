@@ -6,7 +6,7 @@ from torch.nn.functional import cross_entropy as pytorch_cross_entropy
 
 from core.loss_functions.cross_entropy import cross_entropy
 from core.models.three_layer_fc import SimpleFullyConnected
-from core.optimizers.SGD import SGD
+from core.optimizers.SGD_v1 import SGD
 
 class TestCrossEntropy(unittest.TestCase):
 

@@ -2,32 +2,34 @@
 This file contains code for the implementation of Stochastic (mini-batch) Gradient Descent
 """
 
+import torch
+
+
 class SGD(object):
     """
     Class implementing Stochastic (mini-batch) Gradient Descent
     """
 
-    def __init__(self, params, gradients, lr=0.001, weight_decay=0.0):
+    def __init__(self, params, lr=0.001, weight_decay=0.0):
         """
         Constructor.
         Args:
-            params: tuple of tensor,
-                    parameters to optimize. This should be a tuple of all parameter sets in the model to update.
-                    Each parameter set should be a tensor.
-            gradients: tuple of tensor,
-                    corresponding gradients for params. Again, this should be a tuple with a one-to-one
-                    correspondence to params.
+            params: iterator of Parameter,
+                    Iterator over Parameters to optimize.
             lr: float,
                     learning rate for numerical optimization.
             weight_decay: float,
                     weight decay for regularization.
         """
 
-        self.params = params
-        self.gradients = gradients
+        # if not isinstance(params, torch.nn.Parameter):
+        #     raise ValueError('params must be type torch.nn.Parameter but is type {}'.format(type(params)))
+
+        self.params = list(params)
         self.lr = lr
         self.weight_decay = weight_decay
 
+    @torch.no_grad()
     def step(self):
         """
         Takes a single optimization step.
@@ -35,9 +37,21 @@ class SGD(object):
 
         """
 
-        for params, gradients in zip(self.params, self.gradients):
-            grad = gradients
+        for param in self.params:
+            grad = param.grad
             if self.weight_decay > 0:
                 # Add weight decay directly to the gradients
-                grad += self.weight_decay * params
-            params.sub_(self.lr * grad)
+                grad += self.weight_decay * param
+            param.sub_(self.lr * grad)
+
+    def zero_grad(self):
+        """
+        Zeros the gradients for all parameters known to this optimizer.
+        Returns: None
+
+        """
+
+        for param in self.params:
+            if param.grad is not None:
+                param.grad.detach_()
+                param.grad.zero_()

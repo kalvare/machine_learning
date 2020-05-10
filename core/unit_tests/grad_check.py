@@ -3,9 +3,6 @@ This file contains code for implementing gradient checking
 """
 
 import torch
-import numpy as np
-
-from core.models.three_layer_fc import SimpleFullyConnected
 
 
 def gradient_check(x, y, model, parameter, backward_grad_idx, cost_fn, kwargs):
